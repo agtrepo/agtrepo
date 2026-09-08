@@ -3,7 +3,15 @@
 # this site is gated behind robots.txt; access to paid actions is enforced
 # by x402 payment, not by hiding URLs from crawlers.
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
+
+# Content-Signal (see https://contentsignals.org) states the same "welcome"
+# policy in machine-readable form: search indexing, use as AI-input context
+# (e.g. RAG/answer generation), and AI training are all permitted. Nothing
+# rendered on this site is proprietary content worth restricting -- the
+# actual paid memory ciphertext is never in the HTML, only titles/tags/site
+# copy are, and those are meant to be found and read.
 
 # Common AI/LLM crawlers, named explicitly since some respect a named block
 # over a wildcard.
