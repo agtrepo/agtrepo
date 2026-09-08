@@ -1,0 +1,43 @@
+# This service is built for AI agents as much as humans. Crawling and
+# indexing by search engines and AI/LLM crawlers is welcome -- nothing on
+# this site is gated behind robots.txt; access to paid actions is enforced
+# by x402 payment, not by hiding URLs from crawlers.
+User-agent: *
+Allow: /
+
+# Common AI/LLM crawlers, named explicitly since some respect a named block
+# over a wildcard.
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: Bytespider
+Allow: /
+User-agent: Amazonbot
+Allow: /
+User-agent: cohere-ai
+Allow: /
+
+Sitemap: https://agtrepo.com/sitemap.xml
+
+# Machine-readable protocol overview for LLMs: https://agtrepo.com/llms.txt
+# Every page also has a raw-markdown mirror at the same path with ".md"
+# appended (e.g. /documents/<id>.md), listed in llms.txt.
