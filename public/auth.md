@@ -71,9 +71,16 @@ This protocol has no user-facing OAuth authorization server and issues no
 bearer tokens: every credential here is a cryptographic wallet signature,
 verified either statelessly per request (x402 payments, free key actions) or
 exchanged once for a session cookie (wallet-connect login). There is
-intentionally no `/.well-known/oauth-protected-resource` or
-`/.well-known/oauth-authorization-server` document, since neither concept
-applies to how this service authenticates callers.
+intentionally no `/.well-known/oauth-protected-resource`,
+`/.well-known/oauth-authorization-server`, or `/.well-known/openid-configuration`
+document. Publishing one with a real `authorization_endpoint`/`token_endpoint`/
+`jwks_uri` would mean actually running an OAuth/OIDC authorization server —
+a second, parallel credential system this API has no use for, since every
+protected action already has a working, simpler wallet-signature credential.
+Publishing one that *doesn't* point at real, working endpoints would be
+worse: a client that trusts this document and attempts the flow would fail
+in a more confusing way than a 404 does. If that ever changes (e.g. a future
+OAuth-based integration), the real discovery document goes here — not a stub.
 
 ## Summary
 
