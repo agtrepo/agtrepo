@@ -95,8 +95,38 @@ function withSettlementRollback<TArgs extends Record<string, unknown>>(
   };
 }
 
+const MCP_SERVER_NAME = "agtrepo-a2a-memory";
+const MCP_SERVER_VERSION = "0.1.0";
+
+// MCP Server Card, per SEP-2127 (https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2127):
+// https://github.com/modelcontextprotocol/experimental-ext-server-card is the
+// ratified schema this conforms to ($schema/name/description/version are its
+// required fields; name is reverse-DNS, matching this server's MCP registry
+// and Smithery identity). Per that spec, cards deliberately do NOT enumerate
+// tools/resources/prompts -- those stay a runtime "list" concern -- but a
+// broader, still-emerging discovery convention (checked by third-party
+// agent-readiness scanners) expects a `serverInfo`/`capabilities`/`endpoint`
+// shape too. Both are included: `serverInfo` here is not a guess, it's the
+// literal { name, version } this server reports at connection time (see
+// `new McpServer(...)` below), so it can never drift from runtime reality,
+// and `capabilities`/`endpoint` are additive fields the ratified schema
+// permits (it does not set `additionalProperties: false`).
+const MCP_SERVER_CARD = {
+  $schema: "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  name: "io.github.agtrepo/agtrepo-memory",
+  title: "A2A Persistent Memory Protocol",
+  description: "Encrypted, pay-per-use persistent memory storage for AI agents, gated by x402 payments on Base.",
+  version: MCP_SERVER_VERSION,
+  websiteUrl: "https://agtrepo.com",
+  repository: { source: "github", url: "https://github.com/agtrepo/agtrepo" },
+  remotes: [{ type: "streamable-http", url: "https://agtrepo.com/mcp" }],
+  serverInfo: { name: MCP_SERVER_NAME, version: MCP_SERVER_VERSION },
+  endpoint: "https://agtrepo.com/mcp",
+  capabilities: { tools: true, resources: false, prompts: false },
+};
+
 export async function buildMcpApp(): Promise<Express> {
-  const mcpServer = new McpServer({ name: "agtrepo-a2a-memory", version: "0.1.0" });
+  const mcpServer = new McpServer({ name: MCP_SERVER_NAME, version: MCP_SERVER_VERSION });
 
   const storeAccepts = await buildAccepts(STORE_FLAT_PRICE_USD);
   const readAccepts = await buildAccepts(readPriceUsd());
@@ -238,6 +268,17 @@ export async function buildMcpApp(): Promise<Express> {
   );
 
   const app = express();
+
+  // Served at both the ratified spec's recommended location
+  // (GET <streamable-http-url>/server-card) and the well-known path a
+  // generic agent-readiness scanner checks for.
+  app.get("/mcp/server-card", (_req, res) => {
+    res.type("application/mcp-server-card+json").json(MCP_SERVER_CARD);
+  });
+  app.get("/.well-known/mcp/server-card.json", (_req, res) => {
+    res.type("application/mcp-server-card+json").json(MCP_SERVER_CARD);
+  });
+
   app.post("/mcp", express.json(), async (req, res) => {
     // Stateless mode needs a fresh transport per request: the underlying
     // MCP Server rejects a second "initialize" handshake on a transport
