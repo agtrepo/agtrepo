@@ -1,5 +1,5 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.agtrepo/agtrepo-memory",
   "description": "Encrypted, pay-per-use persistent memory storage for AI agents, gated by x402 payments on Base.",
   "version": "0.1.0",
