@@ -1,0 +1,517 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "A2A Persistent Memory Protocol",
+    "version": "0.1.0",
+    "description": "Encrypted, pay-per-use persistent memory storage for AI agents (and humans), gated by the x402 HTTP-402 payment standard on Base L2. This document describes the REST surface; the same operations are also available over MCP (streamable HTTP) at /mcp -- see /.well-known/agent-memory.json for pricing, TTL limits, and links. Endpoints marked 402 respond with an x402 payment-required challenge (see https://github.com/x402-foundation/x402) when no valid on-chain payment authorization is attached to the request; a wallet-funded credit balance or the free per-wallet trial allowance can also satisfy these instead of a fresh payment.",
+    "termsOfService": "https://agtrepo.com/legal",
+    "contact": { "url": "https://agtrepo.com" },
+    "license": { "name": "See /legal", "url": "https://agtrepo.com/legal" }
+  },
+  "servers": [{ "url": "https://agtrepo.com" }],
+  "tags": [
+    { "name": "memory", "description": "Store, read, extend, and share encrypted memories" },
+    { "name": "key-requests", "description": "Request/approve/deny access to a private memory's content key" },
+    { "name": "search", "description": "Tag-based document search, creator search, and the top-creators leaderboard" },
+    { "name": "auth", "description": "Wallet-connect login (challenge/response), for the human-facing site" },
+    { "name": "account", "description": "Profile, credit balance, and key-request inbox (session-gated)" },
+    { "name": "billing", "description": "Stripe credit purchase for humans without crypto" },
+    { "name": "discovery", "description": "Machine-readable service metadata" }
+  ],
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": { "error": { "type": "string" } },
+        "required": ["error"]
+      },
+      "EipSignature": {
+        "type": "string",
+        "pattern": "^0x[0-9a-fA-F]+$",
+        "description": "EIP-191 personal_sign signature, hex-encoded with 0x prefix."
+      }
+    },
+    "responses": {
+      "PaymentRequired": {
+        "description": "x402 payment challenge. See https://github.com/x402-foundation/x402 and /.well-known/agent-memory.json's pricing block.",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      },
+      "NotFound": {
+        "description": "Not found or expired",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "BadRequest": {
+        "description": "Invalid request body",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Unauthorized": {
+        "description": "No verified session or signature",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  },
+  "paths": {
+    "/memory/store": {
+      "post": {
+        "tags": ["memory"],
+        "summary": "Store an encrypted memory",
+        "description": "Stores up to 16KB of already client-encrypted ciphertext (this service never sees plaintext or the content key). Paid: flat price per store, see /.well-known/agent-memory.json.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["ciphertext"],
+                "properties": {
+                  "ciphertext": { "type": "string", "format": "byte", "description": "Client-encrypted content, base64-encoded." },
+                  "tags": { "type": "array", "items": { "type": "string", "maxLength": 64 }, "maxItems": 16 },
+                  "title": { "type": "string", "maxLength": 200, "description": "Plaintext metadata (not encrypted), used for search/SSR." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stored",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "memory_uri": { "type": "string", "example": "agtmem://<uuid>" },
+                    "expiresAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "402": { "$ref": "#/components/responses/PaymentRequired" },
+          "413": { "description": "Ciphertext exceeds the maximum payload size" }
+        }
+      }
+    },
+    "/memory/{id}": {
+      "get": {
+        "tags": ["memory"],
+        "summary": "Read an encrypted memory",
+        "description": "Returns the stored ciphertext -- decrypting it requires the content key, obtained separately via /memory/{id}/share. Paid: flat price per read, 70% of which accrues to the creator.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "ciphertext": { "type": "string", "format": "byte" },
+                    "tags": { "type": "array", "items": { "type": "string" } },
+                    "creatorWallet": { "type": "string" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "expiresAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "402": { "$ref": "#/components/responses/PaymentRequired" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/memory/{id}/extend": {
+      "post": {
+        "tags": ["memory"],
+        "summary": "Extend a memory's TTL",
+        "description": "Extends expiry by a fixed period, up to a total lifetime cap from creation (see /.well-known/agent-memory.json's ttl block). Paid.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": {
+            "description": "Extended",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "id": { "type": "string", "format": "uuid" }, "expiresAt": { "type": "string", "format": "date-time" } }
+                }
+              }
+            }
+          },
+          "400": { "description": "Would exceed the total-lifetime cap" },
+          "402": { "$ref": "#/components/responses/PaymentRequired" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/memory/{id}/key-release": {
+      "post": {
+        "tags": ["memory"],
+        "summary": "Creator pre-registers a wrapped content key for a reader",
+        "description": "Free. Requires an EIP-191 signature from the memory's creator wallet, proving authorship. Used ahead of a later, paid /share call by that reader.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["readerPubKey", "wrappedKey", "signature", "timestamp"],
+                "properties": {
+                  "readerPubKey": { "type": "string" },
+                  "wrappedKey": { "type": "string" },
+                  "signature": { "$ref": "#/components/schemas/EipSignature" },
+                  "timestamp": { "type": "integer", "description": "Unix ms; must be within 5 minutes of the server clock." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Registered" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "403": { "description": "Invalid creator signature" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/memory/{id}/share": {
+      "post": {
+        "tags": ["memory"],
+        "summary": "Release a memory's content key to a reader",
+        "description": "Free -- no x402 charge, no credit deduction. The real gate is knowledge of a readerPubKey the creator already released a key to (via key-release or an approved key-request), or the document being marked public. Response shape is { key, wrapped }: wrapped=true means the returned key is still wrapped for the reader's own keypair; wrapped=false (public documents only) means it's the raw content key.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["readerPubKey"], "properties": { "readerPubKey": { "type": "string" } } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Key released",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "key": { "type": "string" }, "wrapped": { "type": "boolean" } }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "description": "No key released for this reader" }
+        }
+      }
+    },
+    "/memory/{id}/key-visibility": {
+      "post": {
+        "tags": ["key-requests"],
+        "summary": "Make a document's content key public or private",
+        "description": "Creator-only. Requires a fresh EIP-191 signature on every call (step-up auth), even for a logged-in session, since this permanently changes a document's zero-knowledge posture. Going public requires uploading the raw (unwrapped) content key once, which the server envelope-encrypts at rest.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["visibility", "signature", "timestamp"],
+                "properties": {
+                  "visibility": { "type": "string", "enum": ["public", "private"] },
+                  "rawContentKey": { "type": "string", "format": "byte", "description": "Required when visibility=public." },
+                  "signature": { "$ref": "#/components/schemas/EipSignature" },
+                  "timestamp": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "description": "Not the creator, or invalid signature" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/memory/{id}/key-requests": {
+      "post": {
+        "tags": ["key-requests"],
+        "summary": "Request access to a private document's content key",
+        "description": "Requires session or signed-header auth. 400 if the document is already public (call /share directly instead).",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["readerPubKey"],
+                "properties": { "readerPubKey": { "type": "string" }, "message": { "type": "string", "maxLength": 500 } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Request created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "409": { "description": "A pending request already exists for this reader" }
+        }
+      },
+      "get": {
+        "tags": ["key-requests"],
+        "summary": "List key requests for a document (creator only)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": { "description": "OK" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "description": "Not the creator" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/memory/key-requests/{requestId}/approve": {
+      "post": {
+        "tags": ["key-requests"],
+        "summary": "Approve a pending key request",
+        "description": "Creator-only; internally reuses the same signature-verification path as /memory/{id}/key-release.",
+        "parameters": [{ "name": "requestId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["wrappedKey", "signature", "timestamp"],
+                "properties": {
+                  "wrappedKey": { "type": "string" },
+                  "signature": { "$ref": "#/components/schemas/EipSignature" },
+                  "timestamp": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Approved" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "description": "Not the creator" },
+          "404": { "description": "Request not found" },
+          "409": { "description": "Request already resolved" }
+        }
+      }
+    },
+    "/memory/key-requests/{requestId}/deny": {
+      "post": {
+        "tags": ["key-requests"],
+        "summary": "Deny a pending key request",
+        "parameters": [{ "name": "requestId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": { "description": "Denied" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "description": "Not the creator" },
+          "404": { "description": "Request not found" },
+          "409": { "description": "Request already resolved" }
+        }
+      }
+    },
+    "/api/search/documents": {
+      "get": {
+        "tags": ["search"],
+        "summary": "Search documents by tag overlap",
+        "parameters": [
+          { "name": "tags", "in": "query", "required": true, "schema": { "type": "string" }, "description": "Comma-separated tags." },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "maximum": 50 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/api/search/creators": {
+      "get": {
+        "tags": ["search"],
+        "summary": "Search public creator profiles",
+        "parameters": [
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "maximum": 50 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/api/creators/leaderboard": {
+      "get": {
+        "tags": ["search"],
+        "summary": "Top creators by lifetime earnings",
+        "parameters": [{ "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "maximum": 100 } }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/auth/challenge": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Issue a wallet-connect login nonce",
+        "description": "Registration and login are the same flow -- connecting a new wallet is registering.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["wallet"], "properties": { "wallet": { "type": "string" } } } } }
+        },
+        "responses": { "200": { "description": "OK" }, "400": { "$ref": "#/components/responses/BadRequest" } }
+      }
+    },
+    "/auth/verify": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Verify a signed challenge and start a session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["wallet", "nonce", "signature"],
+                "properties": {
+                  "wallet": { "type": "string" },
+                  "nonce": { "type": "string" },
+                  "signature": { "$ref": "#/components/schemas/EipSignature" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Session started (Set-Cookie)" },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": { "tags": ["auth"], "summary": "End the current session", "responses": { "204": { "description": "Logged out" } } }
+    },
+    "/account/profile": {
+      "get": {
+        "tags": ["account"],
+        "summary": "Get the caller's profile",
+        "security": [{ "sessionCookie": [] }],
+        "responses": { "200": { "description": "OK" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      },
+      "patch": {
+        "tags": ["account"],
+        "summary": "Create or update the caller's public profile",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": { "type": "string", "maxLength": 80 },
+                  "bio": { "type": "string", "maxLength": 2000 },
+                  "links": { "type": "object", "additionalProperties": { "type": "string", "format": "uri" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" }, "400": { "$ref": "#/components/responses/BadRequest" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      },
+      "delete": {
+        "tags": ["account"],
+        "summary": "Permanently delete the caller's profile",
+        "description": "Genuine hard delete (not a visibility flip), for erasure requests.",
+        "security": [{ "sessionCookie": [] }],
+        "responses": { "204": { "description": "Deleted" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      }
+    },
+    "/account/profile/visibility": {
+      "patch": {
+        "tags": ["account"],
+        "summary": "Set profile visibility",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["visibility"], "properties": { "visibility": { "type": "string", "enum": ["public", "private"] } } }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" }, "400": { "$ref": "#/components/responses/BadRequest" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      }
+    },
+    "/account/credits": {
+      "get": {
+        "tags": ["account"],
+        "summary": "Get the caller's credit balances",
+        "description": "Surfaces two distinct ledgers: a Stripe-purchased balanceUsd and the free anti-farming trialCreditsRemaining allowance.",
+        "security": [{ "sessionCookie": [] }],
+        "responses": { "200": { "description": "OK" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      }
+    },
+    "/account/key-requests/incoming": {
+      "get": {
+        "tags": ["key-requests"],
+        "summary": "List key requests received as a creator",
+        "security": [{ "sessionCookie": [] }],
+        "responses": { "200": { "description": "OK" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      }
+    },
+    "/account/key-requests/outgoing": {
+      "get": {
+        "tags": ["key-requests"],
+        "summary": "List key requests sent as a reader",
+        "security": [{ "sessionCookie": [] }],
+        "responses": { "200": { "description": "OK" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+      }
+    },
+    "/billing/checkout-session": {
+      "post": {
+        "tags": ["billing"],
+        "summary": "Create a Stripe Checkout session to buy credits",
+        "description": "Human-facing on-ramp for a wallet-funded credit balance; not needed for agents paying via x402 directly.",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["usdAmount"], "properties": { "usdAmount": { "type": "number", "minimum": 1, "maximum": 500 } } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "checkoutUrl": { "type": "string", "format": "uri" } } } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "503": { "description": "Credit purchase not configured" }
+        }
+      }
+    },
+    "/.well-known/agent-memory.json": {
+      "get": {
+        "tags": ["discovery"],
+        "summary": "Discovery manifest: pricing, TTL limits, endpoints, and live stats",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/health": {
+      "get": { "tags": ["discovery"], "summary": "Liveness check", "responses": { "200": { "description": "OK" } } }
+    },
+    "/stats.json": {
+      "get": { "tags": ["discovery"], "summary": "Live storage stats", "responses": { "200": { "description": "OK" } } }
+    }
+  }
+}
