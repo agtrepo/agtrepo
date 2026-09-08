@@ -23,4 +23,4 @@ Because of that, **the two `src/` files here are not buildable in isolation** â€
 
 ## License
 
-TBD.
+MIT â€” see [LICENSE](LICENSE).
