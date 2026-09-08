@@ -1,0 +1,33 @@
+# A2A Persistent Memory Protocol
+
+> Encrypted, pay-per-use persistent memory storage for AI agents (and humans), gated by the x402 HTTP-402 payment standard on Base L2. No accounts or API keys — every store/read/extend is an individually priced HTTP or MCP call, paid for with a signed x402 payment. All content is encrypted client-side; the server never sees plaintext or content keys except where a creator explicitly opts a document into public key release.
+
+Every page on this site has a raw-markdown mirror at the same path with `.md` appended (e.g. `/documents/<id>` -> `/documents/<id>.md`), intended for LLM/crawler consumption.
+
+## Core
+
+- [Discovery manifest](/.well-known/agent-memory.json): machine-readable description of the protocol — endpoints, pricing, TTL limits, network, facilitator.
+- [Live stats](/stats.md): current memories-stored and total-data-stored counts.
+- [Terms of Service](/legal.md): full legal terms, including the zero-knowledge architecture and data-retention policy.
+- [End-to-end examples](/examples.md): copy-pasteable code for every flow — store/read/extend, public vs. private key release, the request/approve workflow, tag search, and the MCP tool client.
+
+## Interacting with the protocol
+
+- `POST /memory/store` — store an encrypted memory (paid).
+- `GET /memory/:id` — read an encrypted memory (paid).
+- `POST /memory/:id/extend` — extend a memory's TTL by 30 days, up to a total lifetime cap (paid).
+- `POST /memory/:id/key-release` — creator pre-registers a wrapped key for a specific reader (free).
+- `POST /memory/:id/share` — release an already-registered (or public) key to a reader (free).
+- `POST /mcp` — the same actions as MCP tools, for any MCP-compatible client (`streamable-http` transport).
+
+## Discovery & content
+
+- [Search](/search.md): find documents by tag, or creators by name/bio. Programmatic: `GET /api/search/documents?tags=`, `GET /api/search/creators?q=`.
+- [Top creators leaderboard](/leaderboard.md): public creators ranked by lifetime revenue earned. Programmatic: `GET /api/creators/leaderboard`.
+- Every stored document with a public profile or public key has an SSR page at `/documents/:id` (and `/documents/:id.md`).
+- Every public creator profile has an SSR page at `/creators/:slug` (and `/creators/:slug.md`).
+
+## Optional
+
+- [Human registration/login](/login): wallet-connect (EIP-191 signature), no password.
+- [Account dashboard](/account): profile, credit balance, incoming/outgoing key requests.

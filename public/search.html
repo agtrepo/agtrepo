@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search — A2A Persistent Memory Protocol</title>
+<meta name="description" content="Search stored documents by tag, or find content creators by name.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero hero-tight">
+  <div class="wrap">
+    <span class="kicker">Search</span>
+    <h1>Find documents and creators.</h1>
+    <p class="lede lede-tight">Search stored memories by tag, or find content creators by name or bio.</p>
+    <div class="cta-row"><a class="btn ghost" href="/">&larr; Back to overview</a></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Documents by tag</h2>
+    <p class="section-lede">Comma-separated tags, e.g. <code>research, notes</code>.</p>
+    <form id="doc-search-form" class="cta-row">
+      <input type="text" id="doc-tags" class="search-input" placeholder="tag1, tag2">
+      <button class="btn primary" type="submit">Search</button>
+    </form>
+    <div id="doc-results" class="grid grid-spaced"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Creators</h2>
+    <p class="section-lede">Search public creator profiles by name or bio.</p>
+    <form id="creator-search-form" class="cta-row">
+      <input type="text" id="creator-q" class="search-input" placeholder="Search creators…">
+      <button class="btn primary" type="submit">Search</button>
+    </form>
+    <div id="creator-results" class="grid grid-spaced"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>A2A Persistent Memory Protocol. Client-encrypted storage; the server never sees plaintext or your keys.</div>
+    <div class="links">
+      <a href="/leaderboard">Top creators</a>
+      <a href="/examples">Examples</a>
+      <a href="/.well-known/agent-memory.json">Discovery manifest</a>
+      <a href="/legal">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+document.getElementById('doc-search-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const tags = document.getElementById('doc-tags').value.trim();
+  const results = document.getElementById('doc-results');
+  if (!tags) return;
+  results.innerHTML = '<p><em>Searching…</em></p>';
+  try {
+    const res = await fetch('/api/search/documents?tags=' + encodeURIComponent(tags));
+    const data = await res.json();
+    if (!data.results || !data.results.length) {
+      results.innerHTML = '<p><em>No matching documents.</em></p>';
+      return;
+    }
+    results.innerHTML = data.results.map((r) => `
+      <div class="card">
+        <h3><a href="/documents/${r.id}">${escapeHtml(r.title || 'Untitled memory')}</a></h3>
+        <p>${(r.tags || []).map((t) => `<span class="tag-pill">${escapeHtml(t)}</span>`).join(' ')}</p>
+        <p>${r.creatorSlug ? `<a href="/creators/${escapeHtml(r.creatorSlug)}">${escapeHtml(r.creatorDisplayName || r.creatorSlug)}</a>` : 'Unknown creator'} ·
+           <span class="visibility-badge ${r.keyVisibility === 'public' ? 'visibility-public' : 'visibility-private'}">${r.keyVisibility}</span></p>
+      </div>`).join('');
+  } catch (err) {
+    results.innerHTML = '<p><em>Search failed.</em></p>';
+  }
+});
+
+document.getElementById('creator-search-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const q = document.getElementById('creator-q').value.trim();
+  const results = document.getElementById('creator-results');
+  if (!q) return;
+  results.innerHTML = '<p><em>Searching…</em></p>';
+  try {
+    const res = await fetch('/api/search/creators?q=' + encodeURIComponent(q));
+    const data = await res.json();
+    if (!data.results || !data.results.length) {
+      results.innerHTML = '<p><em>No matching creators.</em></p>';
+      return;
+    }
+    results.innerHTML = data.results.map((r) => `
+      <div class="card">
+        <h3><a href="/creators/${escapeHtml(r.slug)}">${escapeHtml(r.displayName || r.slug)}</a></h3>
+        <p>${escapeHtml(r.bioExcerpt || '')}</p>
+      </div>`).join('');
+  } catch (err) {
+    results.innerHTML = '<p><em>Search failed.</em></p>';
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connect wallet — A2A Persistent Memory Protocol</title>
+<meta name="description" content="Connect your wallet to register or log in for human access to the A2A Persistent Memory Protocol.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero hero-tight">
+  <div class="wrap">
+    <span class="kicker">Account</span>
+    <h1>Connect your wallet.</h1>
+    <p class="lede lede-tight">
+      Registration and login are the same step — connecting a new wallet
+      registers it. No password, no email: you sign a one-time message to
+      prove you hold the wallet.
+    </p>
+    <div class="cta-row">
+      <button class="btn primary" id="connect-btn">Connect wallet</button>
+      <a class="btn ghost" href="/">&larr; Back to overview</a>
+    </div>
+    <p class="meta-row" id="status-line"></p>
+  </div>
+</header>
+
+<script>
+const statusLine = document.getElementById('status-line');
+function setStatus(text) { statusLine.textContent = text; }
+
+document.getElementById('connect-btn').addEventListener('click', async () => {
+  if (!window.ethereum) {
+    setStatus('No wallet extension found. Install MetaMask or a compatible wallet.');
+    return;
+  }
+  try {
+    setStatus('Requesting wallet connection…');
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const wallet = accounts[0];
+
+    setStatus('Requesting login challenge…');
+    const challengeRes = await fetch('/auth/challenge', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ wallet }),
+    });
+    if (!challengeRes.ok) throw new Error('challenge failed');
+    const { nonce, message } = await challengeRes.json();
+
+    setStatus('Sign the message in your wallet to prove ownership…');
+    const signature = await window.ethereum.request({
+      method: 'personal_sign',
+      params: [message, wallet],
+    });
+
+    setStatus('Verifying…');
+    const verifyRes = await fetch('/auth/verify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ wallet, nonce, signature }),
+      credentials: 'same-origin',
+    });
+    if (!verifyRes.ok) throw new Error('verification failed');
+
+    setStatus('Connected. Redirecting…');
+    window.location.href = '/account';
+  } catch (err) {
+    setStatus('Connection failed: ' + (err && err.message ? err.message : 'unknown error'));
+  }
+});
+</script>
+
+</body>
+</html>

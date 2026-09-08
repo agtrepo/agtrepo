@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.REPLACE_WITH_GITHUB_USERNAME/agtrepo-memory",
+  "description": "Encrypted, pay-per-use persistent memory storage for AI agents, gated by x402 payments on Base.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/REPLACE_WITH_GITHUB_USERNAME/agtrepo",
+    "source": "github"
+  },
+  "websiteUrl": "https://agtrepo.com",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://agtrepo.com/mcp"
+    }
+  ]
+}

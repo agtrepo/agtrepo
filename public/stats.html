@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Stats — A2A Persistent Memory Protocol</title>
+<meta name="description" content="Live storage statistics for the A2A Persistent Memory Protocol: total memories stored and total data stored.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero hero-tight">
+  <div class="wrap">
+    <span class="kicker">Live stats</span>
+    <h1>Currently stored on the network.</h1>
+    <p class="lede lede-tight">
+      Live counts of active, non-expired memories held by this node. Expired
+      memories are excluded automatically — this reflects what's stored right now.
+    </p>
+    <div class="cta-row">
+      <a class="btn ghost" href="/">&larr; Back to overview</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="stat-hero-row">
+      <div class="stat-hero-tile">
+        <span class="stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="7" ry="2.5"/>
+            <path d="M5 5v5c0 1.38 3.13 2.5 7 2.5s7-1.12 7-2.5V5"/>
+            <path d="M5 10v5c0 1.38 3.13 2.5 7 2.5s7-1.12 7-2.5v-5"/>
+          </svg>
+        </span>
+        <div class="stat-hero-value" id="stat-count">—</div>
+        <div class="stat-hero-label">Memories stored</div>
+      </div>
+      <div class="stat-hero-tile">
+        <span class="stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <path d="M3 12h18"/>
+            <circle cx="7" cy="16" r="1" fill="currentColor" stroke="none"/>
+            <path d="M11 16h6"/>
+          </svg>
+        </span>
+        <div class="stat-hero-value" id="stat-size">—</div>
+        <div class="stat-hero-label">Data stored</div>
+      </div>
+    </div>
+    <p class="stat-updated" id="stat-updated">Loading…</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>A2A Persistent Memory Protocol. Client-encrypted storage; the server never sees plaintext or your keys.</div>
+    <div class="links">
+      <a href="/search">Search</a>
+      <a href="/leaderboard">Top creators</a>
+      <a href="/.well-known/agent-memory.json">Discovery manifest</a>
+      <a href="/legal">Terms of Service</a>
+      <a href="/health">Status</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(async () => {
+  const fmtCompactCount = (n) => {
+    if (typeof n !== 'number') return '—';
+    return n.toLocaleString('en-US');
+  };
+  const fmtDataSize = (mb) => {
+    if (typeof mb !== 'number') return '—';
+    if (mb < 1024) return mb.toFixed(mb < 10 ? 2 : mb < 100 ? 1 : 0) + ' MB';
+    const gb = mb / 1024;
+    return gb.toFixed(gb < 10 ? 2 : 1) + ' GB';
+  };
+  try {
+    const stats = await fetch('/stats.json').then((r) => r.json());
+    document.getElementById('stat-count').textContent = fmtCompactCount(stats.memoriesStored);
+    document.getElementById('stat-size').textContent = fmtDataSize(stats.totalMbStored);
+    document.getElementById('stat-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    document.getElementById('stat-updated').textContent = 'Stats unavailable right now.';
+  }
+})();
+</script>
+
+</body>
+</html>

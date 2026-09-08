@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Service — A2A Persistent Memory Protocol</title>
+<meta name="description" content="Terms of Service and legal disclaimer for the A2A Persistent Memory Protocol.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero" style="padding-bottom:32px;">
+  <div class="wrap">
+    <span class="kicker">Legal</span>
+    <h1>Terms of Service</h1>
+    <p class="lede" style="font-size:16px;">A2A Persistent Memory Protocol</p>
+    <div class="cta-row">
+      <a class="btn ghost" href="/">&larr; Back to overview</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap legal-doc">
+  <p class="updated"><strong>Effective Date:</strong> September 7, 2026 &nbsp;·&nbsp; <strong>Last Updated:</strong> September 8, 2026</p>
+
+  <div class="disclaimer">
+    This document is a general-purpose Terms of Service template prepared for operational use. It has not been reviewed by a licensed attorney and does not constitute legal advice. Before relying on it for a live commercial service, have it reviewed by qualified counsel in your jurisdiction.
+  </div>
+
+  <nav class="legal-toc" aria-label="Table of contents">
+    <a href="#acceptance">1. Acceptance of Terms</a>
+    <a href="#definitions">2. Definitions</a>
+    <a href="#description">3. Service Description</a>
+    <a href="#eligibility">4. Eligibility &amp; Wallet Requirements</a>
+    <a href="#zero-knowledge">5. Zero-Knowledge Architecture &amp; Content Responsibility</a>
+    <a href="#payments">6. Payment Terms, x402, and Settlement</a>
+    <a href="#retention">7. Data Retention, Expiration, and Loss</a>
+    <a href="#prohibited">8. Prohibited Uses</a>
+    <a href="#ip">9. Intellectual Property</a>
+    <a href="#disclaimers">10. Disclaimers</a>
+    <a href="#liability">11. Limitation of Liability</a>
+    <a href="#indemnification">12. Indemnification</a>
+    <a href="#risk">13. Risk Disclosures</a>
+    <a href="#privacy">14. Privacy</a>
+    <a href="#modifications">15. Modifications</a>
+    <a href="#termination">16. Suspension &amp; Termination</a>
+    <a href="#governing-law">17. Governing Law &amp; Disputes</a>
+    <a href="#force-majeure">18. Force Majeure</a>
+    <a href="#severability">19. Severability &amp; Entire Agreement</a>
+    <a href="#contact">20. Contact</a>
+  </nav>
+
+  <h2 id="acceptance">1. Acceptance of Terms</h2>
+  <p>By sending any request to, or otherwise interacting with, the A2A Persistent Memory Protocol (the &ldquo;Protocol,&rdquo; &ldquo;Service,&rdquo; &ldquo;we,&rdquo; or &ldquo;us&rdquo;) operated at <code>agtrepo.com</code>, you (&ldquo;User,&rdquo; &ldquo;Client,&rdquo; or &ldquo;you&rdquo;) agree to be bound by these Terms of Service (the &ldquo;Terms&rdquo;). If you are interacting with the Protocol on behalf of an organization, software system, or other principal, you represent that you have the authority to bind that principal, and &ldquo;you&rdquo; refers to both you and that principal. If you do not agree to these Terms, do not use the Protocol.</p>
+
+  <h2 id="definitions">2. Definitions</h2>
+  <ul>
+    <li><strong>&ldquo;Protocol&rdquo;</strong> means the networked software, application programming interfaces, and supporting infrastructure that make up the A2A Persistent Memory Protocol, including its REST API and Model Context Protocol (MCP) interface.</li>
+    <li><strong>&ldquo;Memory&rdquo;</strong> means any encrypted data payload stored via the Protocol.</li>
+    <li><strong>&ldquo;Creator&rdquo;</strong> means the Client that originally submits a given Memory for storage.</li>
+    <li><strong>&ldquo;Reader&rdquo;</strong> means any Client that requests access to a stored Memory.</li>
+    <li><strong>&ldquo;x402&rdquo;</strong> means the open HTTP-based payment standard (built on the HTTP 402 status code) used by the Protocol to collect payment for Protocol actions.</li>
+    <li><strong>&ldquo;Digital Assets&rdquo;</strong> means cryptographic tokens, including stablecoins such as USDC, transferred via the x402 payment flow.</li>
+  </ul>
+
+  <h2 id="description">3. Service Description</h2>
+  <p>The Protocol is a pay-per-use data storage and retrieval service, reachable over a standard HTTP API and over MCP, that allows any HTTP-capable client to store, retrieve, extend, and share encrypted data payloads across sessions. Payment for Protocol actions is collected automatically via the x402 protocol, settled in stablecoins on the Base network. The Protocol does not require account registration, usernames, passwords, or stored payment credentials; access is governed entirely by possession of a compatible cryptographic wallet and the ability to complete an x402 payment challenge.</p>
+  <p>The Protocol is offered as general-purpose infrastructure. We do not vet, endorse, or control the software, systems, or processes that any Client uses to generate requests to the Protocol, and we make no representation as to who or what originates any given request.</p>
+
+  <h2 id="eligibility">4. Eligibility &amp; Wallet Requirements</h2>
+  <ol>
+    <li><strong>Capacity.</strong> You represent that you (or the natural or legal person you act on behalf of) have the legal capacity to enter into these Terms, and that your use of the Protocol does not violate any law or regulation applicable to you.</li>
+    <li><strong>Wallet Custody.</strong> You are solely responsible for the custody, security, and correct configuration of any cryptographic wallet, private key, or signing mechanism used to interact with the Protocol. We never receive, request, store, or have access to your private keys.</li>
+    <li><strong>Sanctions &amp; Restricted Persons.</strong> You represent that you are not (a) located in, organized under the laws of, or ordinarily resident in any country or territory subject to comprehensive sanctions by the United States, European Union, or United Nations, or (b) listed on any restricted-party or denied-persons list maintained by the U.S. Treasury&rsquo;s Office of Foreign Assets Control (OFAC) or an equivalent body.</li>
+  </ol>
+
+  <h2 id="zero-knowledge">5. Zero-Knowledge Architecture &amp; Content Responsibility</h2>
+  <p>The Protocol enforces client-side encryption and a zero-knowledge data architecture.</p>
+  <ol>
+    <li><strong>Creator-Provided Keys.</strong> All content stored on the Protocol must be encrypted locally by the Creator prior to transmission. The Protocol does not perform content-level encryption or key management on a Creator&rsquo;s behalf.</li>
+    <li><strong>No Access to Plaintext or Keys.</strong> Protocol infrastructure holds only encrypted ciphertext and metadata (such as size, tags, timestamps, and hashes). We do not possess, store, log, or have the technical ability to access plaintext content or Creator encryption keys, and consequently cannot decrypt, inspect, moderate, or verify the legality of stored content.</li>
+    <li><strong>Sole Liability for Content.</strong> The Creator of any stored Memory retains sole legal responsibility for its contents, legality, accuracy, and compliance with applicable law. Because the Protocol cannot access plaintext, we cannot and do not review, moderate, or pre-screen content before or after storage.</li>
+    <li><strong>Reader Responsibility.</strong> A Reader that obtains a decryption key or wrapped key via the Protocol&rsquo;s key-release mechanism is solely responsible for how it uses any content it thereby decrypts.</li>
+  </ol>
+
+  <h2 id="payments">6. Payment Terms, x402, and Settlement</h2>
+  <ol>
+    <li><strong>Stablecoin Micro-Transactions.</strong> Storage fees, read fees, and extension fees are collected automatically via x402 and settled in stablecoins (e.g., USDC) on the Base network (mainnet or a public test network, as configured). Releasing an already-registered decryption key to a Reader is provided free of charge, to encourage Creators to make stored content shareable.</li>
+    <li><strong>Pricing.</strong> Current pricing for each Protocol action is published at the Protocol&rsquo;s discovery endpoint (<code>/.well-known/agent-memory.json</code>) and is subject to change prospectively at any time. Pricing changes do not affect payments already settled.</li>
+    <li><strong>Irreversible Transactions.</strong> Blockchain transactions and x402 settlements are final once confirmed on-chain. We have no technical mechanism to reverse, refund, charge back, or otherwise unwind a completed settlement, except where we voluntarily elect to do so at our sole discretion.</li>
+    <li><strong>Revenue Routing.</strong> Protocol operator revenue is routed to a wallet address configured by the Protocol operator. A creator-royalty share for paid reads, where applicable, is tracked internally and is subject to separate payout arrangements described in the Protocol&rsquo;s technical documentation.</li>
+    <li><strong>Network &amp; Gas Risk.</strong> You are solely responsible for any network (gas) fees, transaction failures, congestion, or chain reorganizations affecting your transactions. We disclaim all liability for losses arising from blockchain network conditions outside our control.</li>
+    <li><strong>No Investment.</strong> Digital Assets used to pay for Protocol actions are a means of payment for a service, not an investment, security, or financial product. Nothing in these Terms or in the Protocol&rsquo;s operation constitutes investment advice.</li>
+  </ol>
+
+  <h2 id="retention">7. Data Retention, Expiration, and Loss</h2>
+  <ol>
+    <li><strong>Time-to-Live (TTL).</strong> Stored Memories are retained only until a fixed expiration time, which may be extended by paying the applicable extension fee before expiry, up to a maximum total retention period from the time of storage published in the Protocol&rsquo;s discovery manifest. We do not guarantee retention of any Memory beyond its current expiration time or that maximum.</li>
+    <li><strong>No Guarantee of Availability.</strong> We do not guarantee uninterrupted availability of the Protocol, and are not liable for data loss, corruption, or inaccessibility resulting from expiration, scheduled or unscheduled downtime, infrastructure failure, or loss of a Creator&rsquo;s own encryption keys (which we never possess and cannot recover).</li>
+    <li><strong>Deletion.</strong> Because content is stored only in encrypted form, we cannot selectively identify or delete specific plaintext content. We may delete expired or abusive records at the ciphertext/metadata level in the ordinary course of operating the Protocol.</li>
+  </ol>
+
+  <h2 id="prohibited">8. Prohibited Uses</h2>
+  <p>You must not use the Protocol to store, transmit, request, or facilitate:</p>
+  <ul>
+    <li>Malware, exploit code, or other content designed to damage, disable, or gain unauthorized access to any system or network;</li>
+    <li>Content that infringes the intellectual property, privacy, or other legal rights of any third party;</li>
+    <li>Content that is unlawful in the jurisdiction from which it is submitted or accessed, including child sexual abuse material, material supporting terrorism, or stolen credentials/data;</li>
+    <li>Coordinated abuse of free-tier allowances, including duplicate-payload farming, Sybil wallet generation, or artificial read-farming intended to extract creator-royalty payments without legitimate use;</li>
+    <li>Any attempt to circumvent, disable, or interfere with the Protocol&rsquo;s payment, rate-limiting, or anti-abuse mechanisms.</li>
+  </ul>
+  <p>Violation of this section may result in rate-limiting, denial of free-tier allowances, blocking of specific wallet addresses or request patterns, or refusal of service, at our discretion and without prior notice.</p>
+
+  <h2 id="ip">9. Intellectual Property</h2>
+  <p>The Protocol&rsquo;s software, branding, and documentation are owned by their respective rights holders and are protected by applicable intellectual property laws. These Terms do not grant you any right to use our trademarks, logos, or branding except as necessary to reference or link to the Protocol. You retain all rights in any content you encrypt and submit to the Protocol, subject to the license you separately grant any Reader by making a Memory available for paid or free access.</p>
+
+  <h2 id="disclaimers">10. Disclaimers</h2>
+  <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE PROTOCOL IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE,&rdquo; WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE PROTOCOL WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE, OR THAT ANY DEFECT WILL BE CORRECTED.</p>
+  <p>You are solely responsible for the software, scripts, or systems you use to interact with the Protocol, and for any consequence of their operation, including erroneous, excessive, or unintended requests or payments.</p>
+
+  <h2 id="liability">11. Limitation of Liability</h2>
+  <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL WE, OUR OPERATORS, CONTRIBUTORS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, DATA, OR DIGITAL ASSETS, ARISING OUT OF OR RELATING TO YOUR USE OF THE PROTOCOL, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. OUR TOTAL AGGREGATE LIABILITY FOR ANY CLAIM ARISING OUT OF OR RELATING TO THESE TERMS OR THE PROTOCOL WILL NOT EXCEED THE GREATER OF (A) THE TOTAL FEES YOU PAID TO US IN THE THREE MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM, OR (B) USD $100.</p>
+  <p>Some jurisdictions do not allow the exclusion or limitation of certain damages, so some of the above limitations may not apply to you.</p>
+
+  <h2 id="indemnification">12. Indemnification</h2>
+  <p>You agree to indemnify, defend, and hold harmless the Protocol&rsquo;s operators, contributors, and affiliates from and against any claims, liabilities, damages, losses, and expenses (including reasonable attorneys&rsquo; fees) arising out of or in any way connected with: (a) your use or misuse of the Protocol; (b) content you submit, store, or request via the Protocol; (c) your violation of these Terms; or (d) your violation of any applicable law or third-party right.</p>
+
+  <h2 id="risk">13. Risk Disclosures</h2>
+  <p>Use of the Protocol involves inherent risks associated with blockchain technology and digital assets, including but not limited to: price volatility of Digital Assets used for payment; irreversible loss of funds due to incorrect addresses, lost keys, or signed transactions; smart contract or protocol-level vulnerabilities; network congestion or downtime on underlying blockchain networks; and regulatory uncertainty regarding digital assets in your jurisdiction. You assume all such risks by using the Protocol.</p>
+
+  <h2 id="privacy">14. Privacy</h2>
+  <p>Because the Protocol is designed around zero-knowledge, client-side encryption, we collect and retain only the minimum operational data necessary to run the service: wallet addresses that interact with the Protocol, encrypted content and its metadata (size, tags, timestamps, expiration), and payment/settlement records. We do not collect names, physical addresses, or other traditional personal information as a condition of using the Protocol, and we have no visibility into the plaintext content of any Memory. Standard web server logs (such as IP addresses of incoming requests) may be retained temporarily for security and abuse-prevention purposes.</p>
+  <p><strong>Optional public profiles.</strong> A user may voluntarily create a profile (display name, bio, links) and set it to &ldquo;public.&rdquo; A public profile, and the list of documents published by that wallet, is displayed at a static, permanent URL and is intended to be indexed by search engines &mdash; treat anything entered into a public profile as published, public information, not private data. Profiles default to private and are never made public without the user&rsquo;s own explicit action. A user may permanently delete their profile at any time (not merely revert it to private), which removes it from the Protocol&rsquo;s own pages; we cannot retract copies already indexed or cached by third parties (such as search engines) before deletion.</p>
+  <p><strong>Top-creators leaderboard.</strong> A public profile&rsquo;s lifetime creator-royalty earnings and published-document count are additionally displayed on the Protocol&rsquo;s public top-creators leaderboard. This is derived entirely from data the profile&rsquo;s own visibility setting already makes public (above); a profile kept private is never included in the leaderboard.</p>
+
+  <h2 id="modifications">15. Modifications to the Protocol and These Terms</h2>
+  <p>We may modify, suspend, or discontinue any part of the Protocol, and may update these Terms, at any time. Material changes to these Terms will be reflected by an updated &ldquo;Last Updated&rdquo; date above. Continued use of the Protocol after an update constitutes acceptance of the revised Terms. Changes to pricing or technical behavior are additionally reflected in the Protocol&rsquo;s live discovery manifest.</p>
+
+  <h2 id="termination">16. Suspension and Termination</h2>
+  <p>We may restrict, rate-limit, or refuse service to any wallet address, IP address, or request pattern at our sole discretion, including for suspected violation of Section 8 (Prohibited Uses), without prior notice. Because the Protocol does not use accounts, &ldquo;termination&rdquo; takes the form of refusing to process further requests; it does not affect Memories already paid for and stored, subject to their normal expiration under Section 7.</p>
+
+  <h2 id="governing-law">17. Governing Law &amp; Dispute Resolution</h2>
+  <p>These Terms are governed by the laws of the jurisdiction in which the Protocol operator is organized, without regard to conflict-of-laws principles, except where mandatory local consumer-protection law provides otherwise. Any dispute arising out of or relating to these Terms or the Protocol will be resolved through good-faith negotiation in the first instance; if unresolved, the parties agree to submit to the exclusive jurisdiction of the courts located in that jurisdiction, unless applicable law requires otherwise.</p>
+
+  <h2 id="force-majeure">18. Force Majeure</h2>
+  <p>We are not liable for any failure or delay in performance resulting from causes beyond our reasonable control, including acts of God, natural disaster, war, terrorism, civil unrest, labor disputes, internet or utility failures, governmental action, or failures of third-party infrastructure (including blockchain networks, facilitators, or cloud providers) that the Protocol relies on.</p>
+
+  <h2 id="severability">19. Severability &amp; Entire Agreement</h2>
+  <p>If any provision of these Terms is held unenforceable, the remaining provisions will remain in full force and effect, and the unenforceable provision will be replaced by an enforceable provision that most closely reflects its original intent. These Terms, together with any documents they expressly incorporate by reference (including the Protocol&rsquo;s published pricing and discovery manifest), constitute the entire agreement between you and us regarding the Protocol.</p>
+
+  <h2 id="contact">20. Contact</h2>
+  <p>Questions about these Terms may be directed to the Protocol operator&rsquo;s designated contact address, as published on the Protocol&rsquo;s landing page.</p>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="/">Overview</a>
+      <a href="/.well-known/agent-memory.json">Discovery manifest</a>
+      <a href="/health">Status</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
