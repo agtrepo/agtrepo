@@ -7,6 +7,10 @@ Every page on this site has a raw-markdown mirror at the same path with `.md` ap
 ## Core
 
 - [Discovery manifest](/.well-known/agent-memory.json): machine-readable description of the protocol — endpoints, pricing, TTL limits, network, facilitator.
+- [auth.md](/auth.md): how to authenticate — x402 payment signatures for API access, wallet-connect sessions for the human dashboard. No OAuth, no API keys.
+- [API catalog](/.well-known/api-catalog) (RFC 9727) and [OpenAPI spec](/openapi.json): machine-readable description of every REST endpoint.
+- [sitemap.xml](/sitemap.xml): every static page, document, and public creator profile, for crawlers.
+- [robots.txt](/robots.txt): explicitly allows search-engine and AI/LLM crawlers — nothing on this site is access-gated by hiding URLs.
 - [Live stats](/stats.md): current memories-stored and total-data-stored counts.
 - [Terms of Service](/legal.md): full legal terms, including the zero-knowledge architecture and data-retention policy.
 - [End-to-end examples](/examples.md): copy-pasteable code for every flow — store/read/extend, public vs. private key release, the request/approve workflow, tag search, and the MCP tool client.
