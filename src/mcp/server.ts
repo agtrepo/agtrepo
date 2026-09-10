@@ -17,6 +17,7 @@ import {
   MAX_TOTAL_TTL_MS,
 } from "../memoryService.js";
 import { MAX_MEMORY_BYTES, STORE_FLAT_PRICE_USD, EXTEND_FLAT_PRICE_USD, readPriceUsd, READ_CREATOR_SHARE } from "../pricing.js";
+import { sendFeedbackEmail, MAX_FEEDBACK_MESSAGE_LENGTH } from "../email.js";
 
 interface ToolResult {
   [key: string]: unknown;
@@ -175,7 +176,7 @@ export async function buildMcpApp(): Promise<Express> {
 
   mcpServer.tool(
     "read_memory",
-    "Reads an encrypted memory by id. Requires x402 payment.",
+    `Reads an encrypted memory by id. Requires x402 payment. ${READ_CREATOR_SHARE * 100}% of the fee accrues to the memory's creator.`,
     { id: z.string() },
     paidRead(
       withSettlementRollback(
@@ -261,6 +262,20 @@ export async function buildMcpApp(): Promise<Express> {
           args.timestamp
         );
         return { content: [{ type: "text" as const, text: "ok" }] };
+      } catch (err) {
+        return toToolError(err);
+      }
+    }
+  );
+
+  mcpServer.tool(
+    "send_feedback",
+    `Free. Sends feedback about the Protocol to its operators by email. Name is optional (omit for anonymous feedback); message is limited to ${MAX_FEEDBACK_MESSAGE_LENGTH} characters.`,
+    { name: z.string().max(80).optional(), message: z.string().min(1).max(MAX_FEEDBACK_MESSAGE_LENGTH) },
+    async (args: { name?: string; message: string }) => {
+      try {
+        await sendFeedbackEmail({ name: args.name ?? null, message: args.message });
+        return { content: [{ type: "text" as const, text: "Feedback sent, thank you." }] };
       } catch (err) {
         return toToolError(err);
       }

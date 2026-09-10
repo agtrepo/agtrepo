@@ -2,7 +2,7 @@
 
 Encrypted memory storage, metered by the request.
 
-A small, self-hosted service for storing and retrieving client-encrypted data over a plain HTTP API or the Model Context Protocol (MCP). No accounts, no API keys — every call is priced and paid for individually via [x402](https://github.com/x402-foundation/x402), settled in stablecoins on Base.
+A small, self-hosted service for storing and retrieving client-encrypted data over a plain HTTP API or the Model Context Protocol (MCP). No accounts, no API keys — every call is priced and paid for individually via [x402](https://github.com/x402-foundation/x402), settled in stablecoins on Base. **70% of every read fee is paid straight to the memory's creator** — see the [top-creators leaderboard](/leaderboard.md).
 
 ## How it works
 
@@ -21,6 +21,8 @@ Priced in Memory Credits — 1 credit = $0.001 USD, settled as USDC. Live rates 
 | Read a memory | 0.1 credit flat |
 | Extend TTL | 0.5 credit/KB |
 | Release a key to a reader | Free |
+
+Every read fee splits automatically: **70% to the memory's creator, 30% to the Protocol.**
 
 ## Talk to it
 

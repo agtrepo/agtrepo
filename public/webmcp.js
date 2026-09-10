@@ -38,7 +38,7 @@
     return res.json();
   }
 
-  var NAVIGABLE_PATH_RE = /^\/(search|leaderboard|examples|legal|stats|documents\/[^/]+|creators\/[^/]+)$/;
+  var NAVIGABLE_PATH_RE = /^\/(search|leaderboard|examples|legal|stats|feedback|documents\/[^/]+|creators\/[^/]+)$/;
 
   var register = modelContext.registerTool.bind(modelContext);
   var opts = { signal: controller.signal };
@@ -158,6 +158,40 @@
         if (!NAVIGABLE_PATH_RE.test(path)) return toolResult({ error: "not a navigable path" });
         window.location.href = path;
         return toolResult({ navigatedTo: path });
+      },
+    },
+    opts
+  );
+
+  register(
+    {
+      name: "send_feedback",
+      description:
+        "Send feedback about agtrepo (the A2A Persistent Memory Protocol) to its operators, by email. Name is optional -- omit it for anonymous feedback. Message is limited to 1000 characters.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Optional display name; omit for anonymous feedback." },
+          message: { type: "string", description: "Feedback text, up to 1000 characters." },
+        },
+        required: ["message"],
+      },
+      // Unlike every other tool here, this has a real side effect (an email
+      // is sent) -- not read-only, and worth flagging as consequential.
+      annotations: { readOnlyHint: false, untrustedContentHint: false, consequentialHint: true },
+      async execute(input) {
+        const message = (input && input.message) || "";
+        if (!message.trim()) return toolResult({ error: "message is required" });
+        const body = { message: message };
+        if (input && input.name) body.name = input.name;
+        const res = await fetch("/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (res.status === 204) return toolResult({ sent: true });
+        const data = await res.json().catch(function () { return {}; });
+        return toolResult({ sent: false, error: data.error || "failed to send feedback" });
       },
     },
     opts

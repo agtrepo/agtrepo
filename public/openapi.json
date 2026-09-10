@@ -16,6 +16,7 @@
     { "name": "auth", "description": "Wallet-connect login (challenge/response), for the human-facing site" },
     { "name": "account", "description": "Profile, credit balance, and key-request inbox (session-gated)" },
     { "name": "billing", "description": "Stripe credit purchase for humans without crypto" },
+    { "name": "feedback", "description": "Named or anonymous feedback, delivered by email" },
     { "name": "discovery", "description": "Machine-readable service metadata" }
   ],
   "components": {
@@ -497,6 +498,34 @@
           "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "503": { "description": "Credit purchase not configured" }
+        }
+      }
+    },
+    "/feedback": {
+      "post": {
+        "tags": ["feedback"],
+        "summary": "Send named or anonymous feedback",
+        "description": "Free -- no x402 payment, no session required. Delivered to the operator by email. Rate-limited.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                  "name": { "type": "string", "maxLength": 80, "description": "Optional; omit for anonymous feedback." },
+                  "message": { "type": "string", "minLength": 1, "maxLength": 1000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Sent" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "429": { "description": "Rate limit exceeded" },
+          "503": { "description": "Feedback submission not configured on this server" }
         }
       }
     },

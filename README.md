@@ -1,6 +1,6 @@
 # A2A Persistent Memory Protocol
 
-Encrypted, pay-per-use persistent memory storage for AI agents (and humans), gated by the [x402](https://github.com/x402-foundation/x402) HTTP-402 payment standard on Base L2.
+Encrypted, pay-per-use persistent memory storage for AI agents (and humans), gated by the [x402](https://github.com/x402-foundation/x402) HTTP-402 payment standard on Base L2. **70% of every paid read accrues to the memory's creator**, tracked per wallet on the live [top-creators leaderboard](https://agtrepo.com/leaderboard).
 
 **Live service:** https://agtrepo.com
 **Discovery manifest:** https://agtrepo.com/.well-known/agent-memory.json

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback — A2A Persistent Memory Protocol</title>
+<meta name="description" content="Send named or anonymous feedback about the A2A Persistent Memory Protocol.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero hero-tight">
+  <div class="wrap">
+    <span class="kicker">Feedback</span>
+    <h1>Tell us what's working, and what isn't.</h1>
+    <p class="lede lede-tight">Named or anonymous — up to 1000 characters. Also available as an MCP tool: <code>send_feedback</code>.</p>
+    <div class="cta-row"><a class="btn ghost" href="/">&larr; Back to overview</a></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <form id="feedback-form">
+      <p class="section-lede">Name (optional)</p>
+      <input type="text" id="fb-name" class="search-input" maxlength="80" placeholder="Anonymous">
+      <p class="section-lede section-lede-tight">Message</p>
+      <textarea id="fb-message" rows="8" maxlength="1000" style="width:100%;font:inherit;padding:10px;box-sizing:border-box;" placeholder="What should we know?" required></textarea>
+      <p class="section-lede section-lede-tight"><span id="fb-count">0</span>/1000</p>
+      <div class="cta-row">
+        <button class="btn primary" type="submit">Send feedback</button>
+      </div>
+      <p id="fb-status" class="section-lede section-lede-tight" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>A2A Persistent Memory Protocol. Client-encrypted storage; the server never sees plaintext or your keys.</div>
+    <div class="links">
+      <a href="/search">Search</a>
+      <a href="/leaderboard">Top creators</a>
+      <a href="/examples">Examples</a>
+      <a href="/.well-known/agent-memory.json">Discovery manifest</a>
+      <a href="/legal">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const messageEl = document.getElementById('fb-message');
+const countEl = document.getElementById('fb-count');
+messageEl.addEventListener('input', () => {
+  countEl.textContent = String(messageEl.value.length);
+});
+
+document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('fb-status');
+  const name = document.getElementById('fb-name').value.trim();
+  const message = messageEl.value.trim();
+  if (!message) return;
+
+  status.textContent = 'Sending…';
+  try {
+    const res = await fetch('/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(name ? { name, message } : { message }),
+    });
+    if (res.status === 204) {
+      status.textContent = 'Thank you — feedback sent.';
+      e.target.reset();
+      countEl.textContent = '0';
+    } else {
+      const data = await res.json().catch(() => ({}));
+      status.textContent = data.error || 'Could not send feedback, please try again later.';
+    }
+  } catch (err) {
+    status.textContent = 'Could not send feedback, please try again later.';
+  }
+});
+</script>
+<script src="/webmcp.js" defer></script>
+
+</body>
+</html>

@@ -101,3 +101,16 @@ const read = await client.callTool({
 ```
 
 `x402MCPClient` completes the payment challenge automatically for tools that require one; free tools (`share_memory_key`, `register_key_release`) work like any other MCP tool call.
+
+## 7. Send feedback
+
+Free, no payment or session required. Named or anonymous, up to 1000 characters.
+
+```bash
+curl -X POST https://agtrepo.com/feedback \
+  -H "Content-Type: application/json" \
+  -d '{"name":"optional","message":"Would love a way to bulk-extend memories."}'
+# -> 204
+```
+
+Or the MCP tool `send_feedback`: `{ name?: string, message: string }`.

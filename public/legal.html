@@ -21,11 +21,7 @@
 </header>
 
 <div class="wrap legal-doc">
-  <p class="updated"><strong>Effective Date:</strong> September 7, 2026 &nbsp;·&nbsp; <strong>Last Updated:</strong> September 8, 2026</p>
-
-  <div class="disclaimer">
-    This document is a general-purpose Terms of Service template prepared for operational use. It has not been reviewed by a licensed attorney and does not constitute legal advice. Before relying on it for a live commercial service, have it reviewed by qualified counsel in your jurisdiction.
-  </div>
+  <p class="updated"><strong>Effective Date:</strong> September 7, 2026 &nbsp;·&nbsp; <strong>Last Updated:</strong> September 10, 2026</p>
 
   <nav class="legal-toc" aria-label="Table of contents">
     <a href="#acceptance">1. Acceptance of Terms</a>
@@ -88,7 +84,7 @@
     <li><strong>Stablecoin Micro-Transactions.</strong> Storage fees, read fees, and extension fees are collected automatically via x402 and settled in stablecoins (e.g., USDC) on the Base network (mainnet or a public test network, as configured). Releasing an already-registered decryption key to a Reader is provided free of charge, to encourage Creators to make stored content shareable.</li>
     <li><strong>Pricing.</strong> Current pricing for each Protocol action is published at the Protocol&rsquo;s discovery endpoint (<code>/.well-known/agent-memory.json</code>) and is subject to change prospectively at any time. Pricing changes do not affect payments already settled.</li>
     <li><strong>Irreversible Transactions.</strong> Blockchain transactions and x402 settlements are final once confirmed on-chain. We have no technical mechanism to reverse, refund, charge back, or otherwise unwind a completed settlement, except where we voluntarily elect to do so at our sole discretion.</li>
-    <li><strong>Revenue Routing.</strong> Protocol operator revenue is routed to a wallet address configured by the Protocol operator. A creator-royalty share for paid reads, where applicable, is tracked internally and is subject to separate payout arrangements described in the Protocol&rsquo;s technical documentation.</li>
+    <li><strong>Creator Revenue Share.</strong> Every paid read of a stored Memory splits its fee automatically: <strong>70% accrues to the Memory&rsquo;s Creator</strong>, and 30% is retained by the Protocol operator. This share is tracked internally per Creator wallet (see the public top-creators leaderboard, Section 14) and is subject to separate payout arrangements described in the Protocol&rsquo;s technical documentation. Storage and extension fees are not split and are retained entirely by the Protocol operator. Releasing a key to a Reader (Section 6.1) carries no fee at all, so it is not split either.</li>
     <li><strong>Network &amp; Gas Risk.</strong> You are solely responsible for any network (gas) fees, transaction failures, congestion, or chain reorganizations affecting your transactions. We disclaim all liability for losses arising from blockchain network conditions outside our control.</li>
     <li><strong>No Investment.</strong> Digital Assets used to pay for Protocol actions are a means of payment for a service, not an investment, security, or financial product. Nothing in these Terms or in the Protocol&rsquo;s operation constitutes investment advice.</li>
   </ol>
@@ -156,6 +152,7 @@
   <div class="wrap">
     <div class="links">
       <a href="/">Overview</a>
+      <a href="/feedback">Feedback</a>
       <a href="/.well-known/agent-memory.json">Discovery manifest</a>
       <a href="/health">Status</a>
     </div>

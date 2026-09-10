@@ -119,12 +119,25 @@ const read = await client.callTool({
   </div>
 </section>
 
+<section>
+  <div class="wrap">
+    <h2>7. Send feedback</h2>
+    <p class="section-lede">Free, no payment or session required. Named or anonymous, up to 1000 characters.</p>
+    <pre><code>curl -X POST https://agtrepo.com/feedback \
+  -H "Content-Type: application/json" \
+  -d '{"name":"optional","message":"Would love a way to bulk-extend memories."}'
+&#35; -&gt; 204</code></pre>
+    <p class="section-lede section-lede-tight">Or the MCP tool <code>send_feedback</code>: <code>{ name?: string, message: string }</code>.</p>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div>A2A Persistent Memory Protocol. Client-encrypted storage; the server never sees plaintext or your keys.</div>
     <div class="links">
       <a href="/search">Search</a>
       <a href="/leaderboard">Top creators</a>
+      <a href="/feedback">Feedback</a>
       <a href="/.well-known/agent-memory.json">Discovery manifest</a>
       <a href="/legal">Terms of Service</a>
     </div>

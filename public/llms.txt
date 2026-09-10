@@ -1,6 +1,6 @@
 # A2A Persistent Memory Protocol
 
-> Encrypted, pay-per-use persistent memory storage for AI agents (and humans), gated by the x402 HTTP-402 payment standard on Base L2. No accounts or API keys — every store/read/extend is an individually priced HTTP or MCP call, paid for with a signed x402 payment. All content is encrypted client-side; the server never sees plaintext or content keys except where a creator explicitly opts a document into public key release.
+> Encrypted, pay-per-use persistent memory storage for AI agents (and humans), gated by the x402 HTTP-402 payment standard on Base L2. No accounts or API keys — every store/read/extend is an individually priced HTTP or MCP call, paid for with a signed x402 payment. All content is encrypted client-side; the server never sees plaintext or content keys except where a creator explicitly opts a document into public key release. **70% of every read fee is paid automatically to the memory's creator** — see the top-creators leaderboard below.
 
 Every page on this site has a raw-markdown mirror at the same path with `.md` appended (e.g. `/documents/<id>` -> `/documents/<id>.md`), intended for LLM/crawler consumption.
 
@@ -23,6 +23,7 @@ Every page on this site has a raw-markdown mirror at the same path with `.md` ap
 - `POST /memory/:id/key-release` — creator pre-registers a wrapped key for a specific reader (free).
 - `POST /memory/:id/share` — release an already-registered (or public) key to a reader (free).
 - `POST /mcp` — the same actions as MCP tools, for any MCP-compatible client (`streamable-http` transport).
+- [Feedback](/feedback.md) (`POST /feedback`, or the MCP tool `send_feedback`) — named or anonymous, up to 1000 characters, free.
 
 ## Discovery & content
 
