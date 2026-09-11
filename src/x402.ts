@@ -4,6 +4,7 @@ import type { PaymentPayload, PaymentRequirements } from "@x402/core/types";
 import { paymentMiddleware } from "@x402/express";
 import type { RoutesConfig } from "@x402/core/server";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { bazaarResourceServerExtension, declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { createFacilitatorConfig } from "@coinbase/x402";
 import { config } from "./config.js";
 
@@ -25,10 +26,14 @@ function facilitatorClient(): HTTPFacilitatorClient {
   return new HTTPFacilitatorClient(facilitatorOpts);
 }
 
-export const resourceServer = new x402ResourceServer(facilitatorClient()).register(
-  config.caip2,
-  new ExactEvmScheme()
-);
+export const resourceServer = new x402ResourceServer(facilitatorClient())
+  .register(config.caip2, new ExactEvmScheme())
+  // Bazaar (https://docs.x402.org/extensions/bazaar): lets facilitators that
+  // support it catalog our paid routes for agent discovery. Registering the
+  // extension alone changes nothing about payment verification/settlement --
+  // it only makes routes that opt in (via gatedRoute's `bazaar` param below)
+  // eligible for cataloging.
+  .registerExtension(bazaarResourceServerExtension);
 
 // Static per-route pricing for @x402/express's paymentMiddleware — takes the
 // simple, unresolved PaymentOption shape directly.
@@ -105,16 +110,39 @@ declare module "express-serve-static-core" {
   }
 }
 
+// Discovery metadata for the Bazaar extension (see resourceServer's
+// .registerExtension above). `discovery`'s shape mirrors the real request:
+// no `body`/`pathParams` field means the route takes none. `method` and the
+// resource's URL/route-template are intentionally omitted here --
+// bazaarResourceServerExtension fills those in itself from the actual route
+// at declaration time (see @x402/extensions/bazaar's own doc comment: "set
+// by bazaarResourceServerExtension.enrichDeclaration").
+export interface BazaarDiscoveryConfig {
+  serviceName: string;
+  tags: string[];
+  discovery: Parameters<typeof declareDiscoveryExtension>[0];
+}
+
 // Wraps a single x402-gated route. If a prior trialCreditsGate middleware
 // already paid for this call out of the wallet's off-chain trial-credit
 // balance (req.x402TrialUsed), the SDK's payment challenge is skipped
 // entirely; otherwise the normal 402-challenge/verify/settle flow runs.
-export function gatedRoute(routeKey: string, priceUsd: number, description: string) {
+export function gatedRoute(
+  routeKey: string,
+  priceUsd: number,
+  description: string,
+  bazaar?: BazaarDiscoveryConfig
+) {
   const routes: RoutesConfig = {
     [routeKey]: {
       accepts: [paymentOption(priceUsd)],
       description,
       mimeType: "application/json",
+      ...(bazaar && {
+        serviceName: bazaar.serviceName,
+        tags: bazaar.tags,
+        extensions: declareDiscoveryExtension(bazaar.discovery),
+      }),
     },
   };
   const middleware = paymentMiddleware(routes, resourceServer);
