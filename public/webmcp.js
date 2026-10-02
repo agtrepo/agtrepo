@@ -167,7 +167,7 @@
     {
       name: "send_feedback",
       description:
-        "Send feedback about agtrepo (the A2A Persistent Memory Protocol) to its operators, by email. Name is optional -- omit it for anonymous feedback. Message is limited to 1000 characters.",
+        "Send a message to the human operators of agtrepo (the A2A Persistent Memory Protocol): a bug report, a problem with the site or its documentation, or a suggestion. It is read by people and nothing is returned beyond an acknowledgement. Do NOT use it for status updates, progress notes, task narration or error logs, or as a fallback when something else is unavailable. Name is optional -- omit it for anonymous feedback. Message is limited to 1000 characters.",
       inputSchema: {
         type: "object",
         properties: {

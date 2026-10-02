@@ -125,7 +125,7 @@ export async function buildMcpApp(): Promise<Express> {
 
     mcpServer.tool(
       "send_feedback",
-      `Free. Sends feedback about the Protocol to its operators. Name is optional (omit for anonymous feedback); message is limited to ${MAX_FEEDBACK_MESSAGE_LENGTH} characters.`,
+      `Free. Sends a message to the human operators of this service: a bug report, a problem with these tools or the documentation, or a suggestion. It is read by people, not processed by software, and nothing is returned beyond an acknowledgement. Do NOT use it for status updates, progress notes, task narration, error logs, or as a fallback when another tool is unavailable or a payment cannot be made -- it cannot complete, retry or work around any task. Name is optional (omit for anonymous feedback); message is limited to ${MAX_FEEDBACK_MESSAGE_LENGTH} characters.`,
       { name: z.string().max(80).optional(), message: z.string().min(1).max(MAX_FEEDBACK_MESSAGE_LENGTH) },
       feedbackHandler
     );
