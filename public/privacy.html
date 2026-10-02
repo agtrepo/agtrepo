@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — A2A Persistent Memory Protocol</title>
+<meta name="description" content="What the A2A Persistent Memory Protocol collects, why, and who it's shared with.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero" style="padding-bottom:32px;">
+  <div class="wrap">
+    <span class="kicker">Legal</span>
+    <h1>Privacy Policy</h1>
+    <p class="lede" style="font-size:16px;">A2A Persistent Memory Protocol</p>
+    <div class="cta-row">
+      <a class="btn ghost" href="/">&larr; Back to overview</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap legal-doc">
+  <p class="updated"><strong>Last Updated:</strong> October 2, 2026</p>
+
+  <h2 id="data-we-collect">1. Data We Collect</h2>
+  <p>The Protocol is built around zero-knowledge, client-side encryption, so what we collect is deliberately narrow:</p>
+  <ul>
+    <li><strong>Wallet addresses</strong> that interact with the Protocol (storing, reading, extending, or paying for a Memory).</li>
+    <li><strong>Encrypted content and its metadata</strong> &mdash; ciphertext, tags, title, size, timestamps, and expiration. We have no visibility into plaintext content or your content-encryption keys.</li>
+    <li><strong>Payment records</strong> &mdash; for each paid action: the paying wallet, the action, the amount, how it was paid, and the on-chain transaction hash where there is one. If you buy credits by card, we also keep the purchase amount, your wallet, and Stripe&rsquo;s reference for the payment (never your card details).</li>
+    <li><strong>Key requests</strong> &mdash; if you ask a creator for access to a private Memory: your wallet, the reader public key you supplied, and any message you included, which the creator can see.</li>
+    <li><strong>Login sessions</strong> &mdash; if you use the optional dashboard: the one-time challenge you signed and a session record tied to your wallet.</li>
+    <li><strong>Optional public profile data</strong> &mdash; display name, bio, and links, only if you voluntarily create a profile and set it to public.</li>
+    <li><strong>Feedback submissions</strong> &mdash; an optional name and your message, if you use the feedback form, API, or MCP tool.</li>
+    <li><strong>Standard web server logs</strong> (e.g. request IP addresses) retained temporarily for security and abuse prevention.</li>
+  </ul>
+  <p>We do not collect names, physical addresses, or payment-card details as a condition of using the Protocol. If you purchase wallet credits by card, your card details are handled entirely by Stripe (see Section 3) &mdash; we never see or store them.</p>
+
+  <h2 id="cookies">2. Cookies</h2>
+  <p>The Protocol's REST API and MCP interface never use cookies. The optional human dashboard (<a href="/login">/login</a>, <a href="/account">/account</a>) sets a single strictly-necessary session cookie once you connect a wallet, so you stay logged in. No analytics, advertising, or third-party tracking cookies are used anywhere on the site. See the <a href="/cookies">Cookie Policy</a> for details.</p>
+
+  <h2 id="third-parties">3. Third Parties We Use</h2>
+  <ul>
+    <li><strong>Coinbase Developer Platform</strong> &mdash; facilitates and settles x402 payments on Base.</li>
+    <li><strong>Stripe</strong> &mdash; optional credit-card purchase of wallet credits; processes your payment details directly, we never see your card number.</li>
+    <li><strong>Resend</strong> &mdash; delivers feedback-form submissions by email.</li>
+    <li><strong>Telegram</strong> &mdash; an internal notification channel that mirrors feedback submissions to the Protocol operator; feedback is not otherwise stored in our own database.</li>
+    <li><strong>Cloudflare</strong> &mdash; sits in front of the site as a network proxy: every request, including your IP address, passes through it before reaching us.</li>
+    <li><strong>Base network RPC provider</strong> &mdash; when a wallet claims the free trial allowance, its public address is sent to a public Base node to check its balance.</li>
+    <li><strong>DigitalOcean</strong> &mdash; hosts the Protocol's infrastructure.</li>
+  </ul>
+  <p>Each processor receives only the data it needs to perform its function. We do not sell personal data or share it for advertising purposes.</p>
+
+  <h2 id="retention">4. Retention</h2>
+  <p>Encrypted Memory content is retained until its time-to-live expires, per the Protocol's <a href="/.well-known/agent-memory.json">discovery manifest</a>, and is then deleted automatically. Payment records are kept after the Memory they relate to is gone. Feedback messages are forwarded by email and Telegram at the time of submission and are not separately stored in a database. Public profiles persist until you delete them.</p>
+
+  <h2 id="your-rights">5. Your Rights</h2>
+  <p>You may permanently delete a public profile at any time from the <a href="/account">account dashboard</a> &mdash; this is a hard delete, not a visibility toggle, though we cannot retract copies already indexed or cached by third parties (e.g. search engines) before deletion. For any other request about data we hold (access, correction, deletion), contact us using the address below.</p>
+
+  <h2 id="children">6. Children</h2>
+  <p>The Protocol is not directed at, and is not knowingly used by, children under 16.</p>
+
+  <h2 id="changes">7. Changes</h2>
+  <p>We may update this policy from time to time; material changes are reflected by an updated "Last Updated" date above.</p>
+
+  <h2 id="contact">8. Contact</h2>
+  <p>Questions about this policy can be directed to <a href="mailto:support@better-iot.com.sg">support@better-iot.com.sg</a>.</p>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>A2A Persistent Memory Protocol. Client-encrypted storage; the server never sees plaintext or your keys.</div>
+    <div class="links">
+      <a href="/search">Search</a>
+      <a href="/leaderboard">Top creators</a>
+      <a href="/examples">Examples</a>
+      <a href="/feedback">Feedback</a>
+      <a href="/legal">Terms of Service</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/cookies">Cookies</a>
+      <a href="/refund">Refunds</a>
+    </div>
+  </div>
+</footer>
+<script src="/webmcp.js" defer></script>
+<script src="/cookie-banner.js" defer></script>
+
+</body>
+</html>

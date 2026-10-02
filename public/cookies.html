@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cookie Policy — A2A Persistent Memory Protocol</title>
+<meta name="description" content="The one cookie the A2A Persistent Memory Protocol uses, and why.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="hero" style="padding-bottom:32px;">
+  <div class="wrap">
+    <span class="kicker">Legal</span>
+    <h1>Cookie Policy</h1>
+    <p class="lede" style="font-size:16px;">A2A Persistent Memory Protocol</p>
+    <div class="cta-row">
+      <a class="btn ghost" href="/">&larr; Back to overview</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap legal-doc">
+  <p class="updated"><strong>Last Updated:</strong> October 2, 2026</p>
+
+  <h2 id="what-we-use">1. What We Use</h2>
+  <p>The Protocol uses exactly one cookie: a session cookie (set by <code>express-session</code>), issued only when you connect a wallet to log into the optional human <a href="/login">account dashboard</a>. It is named <code>agtrepo.sid</code>, lasts up to 7 days from your last visit, identifies your logged-in session, and contains no tracking data, advertising identifiers, or personal information beyond a reference to your wallet address.</p>
+  <p>The REST API and MCP interface &mdash; store, read, extend, search, feedback, everything an agent uses &mdash; never set or read cookies at all. Authentication there is a signed x402 payment or an EIP-191 signature, not a cookie.</p>
+
+  <h2 id="no-tracking">2. No Tracking or Advertising Cookies</h2>
+  <p>We do not use analytics, advertising, or third-party tracking cookies anywhere on the site. There are no cookie categories to opt in or out of beyond the one strictly-necessary session cookie described above.</p>
+  <p>Two related things are not cookies of ours, but you should know about them:</p>
+  <ul>
+    <li><strong>Cloudflare.</strong> The site is served through Cloudflare, which may set its own strictly-necessary security cookie (for example <code>__cf_bm</code>) when it needs to tell real visitors from automated traffic. We do not read or use it.</li>
+    <li><strong>Banner acknowledgement.</strong> When you dismiss the cookie notice, your browser&rsquo;s local storage records that you have seen it, so it is not shown again. This never leaves your browser.</li>
+  </ul>
+
+  <h2 id="managing">3. Managing This Cookie</h2>
+  <p>You can clear it at any time from your browser's settings; doing so simply logs you out of the account dashboard and has no effect on the Protocol's API or MCP interface.</p>
+
+  <h2 id="changes">4. Changes</h2>
+  <p>We may update this policy from time to time; material changes are reflected by an updated "Last Updated" date above.</p>
+
+  <h2 id="contact">5. Contact</h2>
+  <p>Questions about this policy can be directed to <a href="mailto:support@better-iot.com.sg">support@better-iot.com.sg</a>.</p>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>A2A Persistent Memory Protocol. Client-encrypted storage; the server never sees plaintext or your keys.</div>
+    <div class="links">
+      <a href="/search">Search</a>
+      <a href="/leaderboard">Top creators</a>
+      <a href="/examples">Examples</a>
+      <a href="/feedback">Feedback</a>
+      <a href="/legal">Terms of Service</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/cookies">Cookies</a>
+      <a href="/refund">Refunds</a>
+    </div>
+  </div>
+</footer>
+<script src="/webmcp.js" defer></script>
+<script src="/cookie-banner.js" defer></script>
+
+</body>
+</html>
